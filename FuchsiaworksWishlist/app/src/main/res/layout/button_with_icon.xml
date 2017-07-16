@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="125dp"
+              android:background="@android:drawable/alert_light_frame"
+              android:orientation="horizontal"
+              android:paddingBottom="30dp"
+              android:paddingTop="20dp">
+
+    <ImageView
+        android:id="@+id/bwi_imgImage"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:maxWidth="75dp"
+        android:minWidth="75dp"
+        android:paddingLeft="15dp"
+        android:src="@drawable/default_image"/>
+
+    <TextView
+        android:id="@+id/bwi_txtName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:maxLines="3"
+        android:maxWidth="100dp"
+        android:minWidth="100dp"
+        android:paddingLeft="15dp"
+        android:text="Default_Text"
+        android:textAlignment="gravity"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|center"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:maxLines="1"
+            android:text="Quantity: "
+            android:textAlignment="center"
+            android:textSize="15dp"/>
+
+        <TextView
+            android:id="@+id/bwi_txtQuantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:paddingTop="5dp"
+            android:text="0"
+            android:textAlignment="center"
+            android:textSize="15dp"/>
+    </LinearLayout>
+</LinearLayout>

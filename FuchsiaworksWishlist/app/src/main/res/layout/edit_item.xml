@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="16dp"
+                android:textDirection="anyRtl">
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <android.support.constraint.ConstraintLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/ei_imgImage"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="24dp"
+                android:layout_weight="1"
+                android:maxWidth="300px"
+                android:minWidth="300px"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/default_image"/>
+
+            <Button
+                android:id="@+id/ei_btnEditImage"
+                android:layout_width="120dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:minWidth="350px"
+                android:text="Edit Image"
+                app:layout_constraintBottom_toBottomOf="@+id/ei_imgImage"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/ei_imgImage"/>
+
+            <TextView
+                android:id="@+id/ei_txtName"
+                android:layout_width="120dp"
+                android:layout_height="60dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="7dp"
+                android:layout_weight="1"
+                android:autoText="false"
+                android:ems="10"
+                android:gravity="center_vertical"
+                android:text="(Name)"
+                android:textAlignment="center"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ei_imgImage"/>
+
+            <Button
+                android:id="@+id/ei_btnEditName"
+                android:layout_width="120dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="0dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:minWidth="670px"
+                android:text="Edit Name"
+                app:layout_constraintBottom_toBottomOf="@+id/ei_txtName"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/ei_txtName"/>
+
+            <TextView
+                android:id="@+id/ei_txtQuantityDesired"
+                android:layout_width="120dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:ems="10"
+                android:gravity="center_vertical"
+                android:text="(Quantity Desired)"
+                android:textAlignment="center"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ei_txtName"/>
+
+            <Button
+                android:id="@+id/ei_btnEditQuantityDesired"
+                android:layout_width="120dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="0dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:minWidth="670px"
+                android:text="Edit Quantity Desired"
+                app:layout_constraintBottom_toBottomOf="@+id/ei_txtQuantityDesired"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/ei_txtQuantityDesired"/>
+
+            <TextView
+                android:id="@+id/ei_txtQuantity"
+                android:layout_width="120dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:ems="10"
+                android:gravity="center_vertical"
+                android:text="(Quantity)"
+                android:textAlignment="center"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ei_txtQuantityDesired"/>
+
+            <Button
+                android:id="@+id/ei_btnEditQuantity"
+                android:layout_width="120dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="0dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:minWidth="670px"
+                android:text="Edit Quantity Collected"
+                app:layout_constraintBottom_toBottomOf="@+id/ei_txtQuantity"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/ei_txtQuantity"/>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/ei_fabResetName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:clickable="true"
+                app:backgroundTint="@android:color/background_light"
+                app:fabSize="mini"
+                app:layout_constraintBottom_toTopOf="@+id/ei_btnEditQuantityDesired"
+                app:layout_constraintRight_toLeftOf="@+id/ei_btnEditName"
+                app:layout_constraintTop_toTopOf="@+id/ei_btnEditName"
+                app:layout_constraintVertical_bias="0.416"
+                app:srcCompat="@android:drawable/ic_menu_rotate"/>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/ei_fabResetImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:clickable="true"
+                app:backgroundTint="@android:color/background_light"
+                app:fabSize="mini"
+                app:layout_constraintBottom_toBottomOf="@+id/ei_btnEditImage"
+                app:layout_constraintRight_toLeftOf="@+id/ei_btnEditImage"
+                app:layout_constraintTop_toTopOf="@+id/ei_btnEditImage"
+                app:srcCompat="@android:drawable/ic_menu_rotate"/>
+
+            <Button
+                android:id="@+id/ei_btnEditGpsLocation"
+                android:layout_width="120dp"
+                android:layout_height="70dp"
+                android:layout_marginBottom="0dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Edit Gps Location"
+                app:layout_constraintBottom_toBottomOf="@+id/ei_btnViewGpsLocation"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/ei_btnViewGpsLocation"/>
+
+            <Button
+                android:id="@+id/ei_btnViewGpsLocation"
+                android:layout_width="120dp"
+                android:layout_height="70dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:text="View Gps Location"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ei_txtQuantity"/>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/ei_fabSetGpaLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:clickable="true"
+                app:backgroundTint="@android:color/background_light"
+                app:fabSize="mini"
+                app:layout_constraintBottom_toBottomOf="@+id/ei_btnEditGpsLocation"
+                app:layout_constraintRight_toLeftOf="@+id/ei_btnEditGpsLocation"
+                app:layout_constraintTop_toTopOf="@+id/ei_btnEditGpsLocation"
+                app:srcCompat="@android:drawable/ic_menu_mylocation"/>
+
+
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
+</RelativeLayout>
