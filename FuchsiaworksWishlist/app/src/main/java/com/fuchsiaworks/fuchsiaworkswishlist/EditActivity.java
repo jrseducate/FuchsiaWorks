@@ -309,6 +309,16 @@ public class EditActivity extends AppCompatActivity
             }
         });
 
+        Button btnReturn = (Button) findViewById(R.id.ei_btnReturn);
+        btnReturn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                finish();
+            }
+        });
+
     }
 
     private void updateDisplay()

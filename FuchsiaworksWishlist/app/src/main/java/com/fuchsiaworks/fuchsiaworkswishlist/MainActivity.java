@@ -245,11 +245,13 @@ public class MainActivity extends AppCompatActivity
                     {
                         showEditScreen();
                         wishlistAdapter.add(itemEditing);
-                    } else if (wishlistAdapter.itemAlreadyScanned(itemEditing))
+                    }
+                    else if (wishlistAdapter.itemAlreadyScanned(itemEditing))
                     {
                         Toast toastError = Toast.makeText(getApplicationContext(), "Barcode Scanning Failed: " + "Item already scanned!", Toast.LENGTH_SHORT);
                         toastError.show();
-                    } else
+                    }
+                    else
                     {
                         Toast toastError = Toast.makeText(getApplicationContext(), "Barcode Scanning Failed: " + "Invalid barcode scanned!", Toast.LENGTH_SHORT);
                         toastError.show();

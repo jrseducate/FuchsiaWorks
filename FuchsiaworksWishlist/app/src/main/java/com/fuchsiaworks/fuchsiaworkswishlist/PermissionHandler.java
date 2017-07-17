@@ -50,7 +50,8 @@ class PermissionHandler
         if (GPSLocationTime - NetLocationTime > 0)
         {
             return locationGPS;
-        } else
+        }
+        else
         {
             return locationNet;
         }
