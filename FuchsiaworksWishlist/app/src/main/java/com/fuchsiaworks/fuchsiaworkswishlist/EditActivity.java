@@ -1,17 +1,14 @@
 package com.fuchsiaworks.fuchsiaworkswishlist;
 
-import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -33,10 +30,10 @@ import java.util.Locale;
 
 public class EditActivity extends AppCompatActivity
 {
-    private static EditActivity editActivity;
-    private static Context context;
 
     static WishlistItem itemEditing;
+    static SharedPreferences sharedPreferences;
+    static WishlistAdapter wishlistAdapter;
 
     private int PICK_IMAGE_REQUEST = 1;
 
@@ -45,11 +42,9 @@ public class EditActivity extends AppCompatActivity
     TextView txtQuantity;
     TextView txtQuantityDesired;
 
-    boolean stillEditing = false;
-
     static void saveItemEditing()
     {
-        MainActivity.mainActivity.wishlistAdapter.saveWishlistItem(MainActivity.mainActivity.sharedPreferences, itemEditing);
+        wishlistAdapter.saveWishlistItem(sharedPreferences, itemEditing);
     }
 
     @Override
@@ -57,21 +52,16 @@ public class EditActivity extends AppCompatActivity
     {
         super.onStop();
 
-        if (!stillEditing)
-        {
-            MainActivity.mainActivity.wishlistAdapter.notifyDataSetChanged();
-            itemEditing = null;
-        }
+        wishlistAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        editActivity = this;
-        context = editActivity.getApplicationContext();
+        final EditActivity editActivity = this;
+        final Context context = editActivity.getApplicationContext();
 
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.edit_item);
 
         image = (ImageView) findViewById(R.id.ei_imgImage);
@@ -87,8 +77,6 @@ public class EditActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                stillEditing = true;
-
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -119,7 +107,7 @@ public class EditActivity extends AppCompatActivity
                     public void onClick(DialogInterface dialog, int which)
                     {
                         String nameOverride = input.getText().toString();
-                        if (nameOverride != null && !nameOverride.isEmpty())
+                        if (!nameOverride.isEmpty())
                         {
                             itemEditing.nameOverride = nameOverride;
                             txtName.setText(itemEditing.nameOverride);
@@ -169,8 +157,7 @@ public class EditActivity extends AppCompatActivity
                     @Override
                     public void onClick(View v)
                     {
-                        int quantityDesired = numberPicker.getValue();
-                        itemEditing.quantityDesired = quantityDesired;
+                        itemEditing.quantityDesired = numberPicker.getValue();
                         txtQuantityDesired.setText(String.valueOf(itemEditing.quantityDesired));
 
                         saveItemEditing();
@@ -214,8 +201,7 @@ public class EditActivity extends AppCompatActivity
                     @Override
                     public void onClick(View v)
                     {
-                        int quantity = numberPicker.getValue();
-                        itemEditing.quantity = quantity;
+                        itemEditing.quantity = numberPicker.getValue();
                         txtQuantity.setText(String.valueOf(itemEditing.quantity));
 
                         saveItemEditing();
@@ -268,10 +254,9 @@ public class EditActivity extends AppCompatActivity
             {
                 if (itemEditing.gpsSet)
                 {
-                    stillEditing = true;
                     if (itemEditing.gpsLocation != null)
                     {
-
+                        //TODO(Jeremy); Display location using landmark
                     } else
                     {
                         String uri = String.format(Locale.ENGLISH, "geo:%f,%f?q=\"%f,%f\"", itemEditing.gpsLatitude, itemEditing.gpsLongitude, itemEditing.gpsLatitude, itemEditing.gpsLongitude);
@@ -294,7 +279,7 @@ public class EditActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-
+                //TODO(Jeremy): Add ability to choose landmark from google maps
             }
         });
 
@@ -304,10 +289,17 @@ public class EditActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                Location location = MainActivity.mainActivity.getLastBestLocation();
+                Location location = PermissionHandler.handler.getLastBestLocation(editActivity);
 
-                itemEditing.gpsLatitude = location.getLatitude();
-                itemEditing.gpsLongitude = location.getLongitude();
+                if (location != null)
+                {
+                    itemEditing.gpsLatitude = location.getLatitude();
+                    itemEditing.gpsLongitude = location.getLongitude();
+                }
+                else
+                {
+                    PermissionHandler.handler.getPermissionForLocation(editActivity);
+                }
 
                 itemEditing.gpsSet = true;
                 saveItemEditing();
@@ -361,7 +353,11 @@ public class EditActivity extends AppCompatActivity
             saveItemEditing();
             updateDisplay();
         }
+    }
 
-        stillEditing = false;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
+    {
+        PermissionHandler.handler.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
     }
 }

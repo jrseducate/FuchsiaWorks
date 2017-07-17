@@ -1,23 +1,19 @@
 package com.fuchsiaworks.fuchsiaworkswishlist;
 
-import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.content.Intent;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.CommonStatusCodes;
@@ -36,11 +32,6 @@ public class MainActivity extends AppCompatActivity
     private static final int ZXING_BARCODE_CAPTURE = 49374;
 
     SharedPreferences sharedPreferences;
-
-    static MainActivity mainActivity;
-    static Context context;
-
-    static LocationManager locationManager;
 
     private FloatingActionButton fabAddItem;
     private FloatingActionButton btnClearItems;
@@ -61,6 +52,7 @@ public class MainActivity extends AppCompatActivity
         Zxing_Scanner("Zxing Barcode Scanner");
 
         String name;
+
         scanner_used(String name)
         {
             this.name = name;
@@ -84,8 +76,8 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_main);
 
-        mainActivity = this;
-        context = mainActivity.getApplicationContext();
+        final MainActivity mainActivity = this;
+        final Context context = mainActivity.getApplicationContext();
         sharedPreferences = getPreferences(Context.MODE_PRIVATE);
 
         // NOTE(Jeremy): Used to determine if selecting for the purpose of deleting
@@ -100,7 +92,7 @@ public class MainActivity extends AppCompatActivity
 
         //NOTE(Jeremy): The _WishlistAdapter_ used to take _WishlistItem_ and properly
         //              display them in the _RecyclerView_
-        wishlistAdapter = new WishlistAdapter(sharedPreferences, R.layout.button_with_icon);
+        wishlistAdapter = new WishlistAdapter(this, sharedPreferences, R.layout.button_with_icon);
         wishlistAdapter.loadWishlistItems(sharedPreferences);
         recyclerViewWishlist.setAdapter(wishlistAdapter);
 
@@ -116,16 +108,18 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                switch(scannerUsed)
+                switch (scannerUsed)
                 {
                     case Google_Scanner:
                     {
                         initiateScanGoogle();
-                    } break;
+                    }
+                    break;
                     case Zxing_Scanner:
                     {
                         initiateScanZxing();
-                    } break;
+                    }
+                    break;
                 }
             }
         });
@@ -149,6 +143,9 @@ public class MainActivity extends AppCompatActivity
                     LinkedList<WishlistItem> wishlistItems = wishlistAdapter.endItemSelection();
                     for (WishlistItem item : wishlistItems)
                         wishlistAdapter.remove(item);
+
+                    wishlistAdapter.saveWishlistItems(sharedPreferences);
+
                     selectingForDelete = false;
                     fabAddItem.setEnabled(true);
                     fabAddItem.getBackground().setColorFilter(Color.parseColor("#FFFF4081"), PorterDuff.Mode.SRC_ATOP);
@@ -156,7 +153,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        fabFlash = (FloatingActionButton)findViewById(R.id.ma_fabFlash);
+        fabFlash = (FloatingActionButton) findViewById(R.id.ma_fabFlash);
         fabFlash.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -177,7 +174,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        fabCaptureType = (FloatingActionButton)findViewById(R.id.ma_fabCaptureType);
+        fabCaptureType = (FloatingActionButton) findViewById(R.id.ma_fabCaptureType);
         fabCaptureType.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -205,7 +202,7 @@ public class MainActivity extends AppCompatActivity
     //NOTE(Jeremy): Used to scan using the ZXwing App
     public void initiateScanZxing()
     {
-        IntentIntegrator scanIntegrator = new IntentIntegrator(mainActivity);
+        IntentIntegrator scanIntegrator = new IntentIntegrator(this);
         scanIntegrator.initiateScan();
     }
 
@@ -230,10 +227,17 @@ public class MainActivity extends AppCompatActivity
                     itemEditing.barcodeFormat = scanFormat;
                     itemEditing.getWebpageIfNeeded();
 
-                    Location location = getLastBestLocation();
+                    Location location = PermissionHandler.handler.getLastBestLocation(this);
 
-                    itemEditing.gpsLatitude = location.getLatitude();
-                    itemEditing.gpsLongitude = location.getLongitude();
+                    if (location != null)
+                    {
+                        itemEditing.gpsLatitude = location.getLatitude();
+                        itemEditing.gpsLongitude = location.getLongitude();
+                    }
+                    else
+                    {
+                        PermissionHandler.handler.getPermissionForLocation(this);
+                    }
 
                     itemEditing.gpsSet = true;
 
@@ -241,30 +245,30 @@ public class MainActivity extends AppCompatActivity
                     {
                         showEditScreen();
                         wishlistAdapter.add(itemEditing);
-                    }
-                    else if (wishlistAdapter.itemAlreadyScanned(itemEditing))
+                    } else if (wishlistAdapter.itemAlreadyScanned(itemEditing))
                     {
                         Toast toastError = Toast.makeText(getApplicationContext(), "Barcode Scanning Failed: " + "Item already scanned!", Toast.LENGTH_SHORT);
                         toastError.show();
-                    }
-                    else
+                    } else
                     {
                         Toast toastError = Toast.makeText(getApplicationContext(), "Barcode Scanning Failed: " + "Invalid barcode scanned!", Toast.LENGTH_SHORT);
                         toastError.show();
                     }
 
                     itemEditing = null;
-                } else
+                }
+                else
                 {
                     Toast toastError = Toast.makeText(getApplicationContext(), "Barcode Scanning Failed: " + "No barcode captured, intent data is null", Toast.LENGTH_SHORT);
                     toastError.show();
-                    Log.d(TAG, "No barcode captured, intent data is null");
+                    Log.d("FWW-MainActivity", "No barcode captured, intent data is null");
                 }
-            } else
+            }
+            else
             {
                 Toast toastError = Toast.makeText(getApplicationContext(), "Barcode Scanning Failed: " + CommonStatusCodes.getStatusCodeString(resultCode), Toast.LENGTH_SHORT);
                 toastError.show();
-                Log.d(TAG, CommonStatusCodes.getStatusCodeString(resultCode));
+                Log.d("FWW-MainActivity", CommonStatusCodes.getStatusCodeString(resultCode));
             }
         }
         else if (requestCode == ZXING_BARCODE_CAPTURE)
@@ -282,10 +286,17 @@ public class MainActivity extends AppCompatActivity
                 itemEditing.barcodeFormat = scanFormat;
                 itemEditing.getWebpageIfNeeded();
 
-                Location location = getLastBestLocation();
+                Location location = PermissionHandler.handler.getLastBestLocation(this);
 
-                itemEditing.gpsLatitude = location.getLatitude();
-                itemEditing.gpsLongitude = location.getLongitude();
+                if (location != null)
+                {
+                    itemEditing.gpsLatitude = location.getLatitude();
+                    itemEditing.gpsLongitude = location.getLongitude();
+                }
+                else
+                {
+                    PermissionHandler.handler.getPermissionForLocation(this);
+                }
 
                 itemEditing.gpsSet = true;
 
@@ -308,7 +319,8 @@ public class MainActivity extends AppCompatActivity
 
                 itemEditing = null;
 
-            } else
+            }
+            else
             {
                 Toast toastError = Toast.makeText(getApplicationContext(), "Barcode Scanning Failed...", Toast.LENGTH_SHORT);
                 toastError.show();
@@ -316,42 +328,18 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    Location getLastBestLocation()
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
     {
-        if (locationManager == null)
-        {
-            locationManager = (LocationManager)
-                    getSystemService(Context.LOCATION_SERVICE);
-        }
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-        {
-            return null;
-        }
-        Location locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        Location locationNet = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-        long GPSLocationTime = 0;
-        if (null != locationGPS) { GPSLocationTime = locationGPS.getTime(); }
-
-        long NetLocationTime = 0;
-
-        if (null != locationNet) {
-            NetLocationTime = locationNet.getTime();
-        }
-
-        if ( 0 < GPSLocationTime - NetLocationTime ) {
-            return locationGPS;
-        }
-        else {
-            return locationNet;
-        }
+        PermissionHandler.handler.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
     }
 
     public void showEditScreen()
     {
         Intent editItemIntent = new Intent(this, EditActivity.class);
         EditActivity.itemEditing = itemEditing;
+        EditActivity.sharedPreferences = sharedPreferences;
+        EditActivity.wishlistAdapter = wishlistAdapter;
 
         startActivity(editItemIntent);
     }

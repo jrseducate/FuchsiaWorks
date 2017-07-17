@@ -1,5 +1,6 @@
 package com.fuchsiaworks.fuchsiaworkswishlist;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -24,6 +25,8 @@ import java.util.LinkedList;
 
 class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
 {
+    private MainActivity mainActivity;
+
     private SharedPreferences preferences;
     private LinkedList<WishlistItem> items;
     private int itemLayout;
@@ -31,8 +34,9 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
     private boolean isSelecting;
     private LinkedList<WishlistItem> itemsSelected;
 
-    WishlistAdapter(SharedPreferences preferences, int itemLayout)
+    WishlistAdapter(MainActivity mainActivity, SharedPreferences preferences, int itemLayout)
     {
+        this.mainActivity = mainActivity;
         this.items = new LinkedList<>();
         this.itemLayout = itemLayout;
         this.preferences = preferences;
@@ -56,11 +60,6 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
         return itemsSelectedPtr;
     }
 
-    LinkedList<WishlistItem> getWishlistItems()
-    {
-        return items;
-    }
-
     private WishlistItem getWishlistItem(int index)
     {
         return items.get(index);
@@ -71,9 +70,9 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
     {
         int wishlistCount = preferences.getInt("wishlistitem-count", 0);
 
-        Log.v("FWW-MainActivity", "Loading Wishlist Items...");
-        Log.v("FWW-MainActivity", "Wishlist Items Count: " + wishlistCount);
-        Log.v("FWW-MainActivity", "");
+        Log.v("FWW-WishlistAdapter", "Loading Wishlist Items...");
+        Log.v("FWW-WishlistAdapter", "Wishlist Items Count: " + wishlistCount);
+        Log.v("FWW-WishlistAdapter", "");
 
         for (int index = 0; index < wishlistCount; index++)
         {
@@ -100,31 +99,32 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
 
     private void logItem(WishlistItem item)
     {
-        Log.v("FWW-MainActivity", "Wishlist Item Name: " + item.name);
-        Log.v("FWW-MainActivity", "Wishlist Item Name Override: " + item.nameOverride);
-        Log.v("FWW-MainActivity", "Wishlist Item Image Url: " + item.imageUrl);
-        Log.v("FWW-MainActivity", "Wishlist Item Image Url Override: " + item.imageUrlOverride);
-        Log.v("FWW-MainActivity", "Wishlist Item Quantity Collected: " + item.quantity);
-        Log.v("FWW-MainActivity", "Wishlist Item Quantity Desired: " + item.quantityDesired);
-        Log.v("FWW-MainActivity", "Wishlist Item Barcode: " + item.barcode);
-        Log.v("FWW-MainActivity", "Wishlist Item Barcode Format: " + item.barcodeFormat);
-        Log.v("FWW-MainActivity", "Wishlist Item Gps Set: " + item.gpsSet);
-        Log.v("FWW-MainActivity", "Wishlist Item Gps Latitude: " + item.gpsLatitude);
-        Log.v("FWW-MainActivity", "Wishlist Item Gps Longitude: " + item.gpsLongitude);
-        Log.v("FWW-MainActivity", "");
+        Log.v("FWW-WishlistAdapter", "Wishlist Item Name: " + item.name);
+        Log.v("FWW-WishlistAdapter", "Wishlist Item Name Override: " + item.nameOverride);
+        Log.v("FWW-WishlistAdapter", "Wishlist Item Image Url: " + item.imageUrl);
+        Log.v("FWW-WishlistAdapter", "Wishlist Item Image Url Override: " + item.imageUrlOverride);
+        Log.v("FWW-WishlistAdapter", "Wishlist Item Quantity Collected: " + item.quantity);
+        Log.v("FWW-WishlistAdapter", "Wishlist Item Quantity Desired: " + item.quantityDesired);
+        Log.v("FWW-WishlistAdapter", "Wishlist Item Barcode: " + item.barcode);
+        Log.v("FWW-WishlistAdapter", "Wishlist Item Barcode Format: " + item.barcodeFormat);
+        Log.v("FWW-WishlistAdapter", "Wishlist Item Gps Set: " + item.gpsSet);
+        Log.v("FWW-WishlistAdapter", "Wishlist Item Gps Latitude: " + item.gpsLatitude);
+        Log.v("FWW-WishlistAdapter", "Wishlist Item Gps Longitude: " + item.gpsLongitude);
+        Log.v("FWW-WishlistAdapter", "");
     }
 
     //NOTE(Jeremy): Saves a _WishlistItem_ to the application preferences
+    @SuppressLint("ApplySharedPref")
     void saveWishlistItem(SharedPreferences preferences, WishlistItem item)
     {
-        Log.v("FWW-MainActivity", "Saving Wishlist Item...");
+        Log.v("FWW-WishlistAdapter", "Saving Wishlist Item...");
 
         SharedPreferences.Editor editor = preferences.edit();
 
         editor.putInt("wishlistitem-count", items.size());
 
-        Log.v("FWW-MainActivity", "Wishlist Items Count: " + items.size());
-        Log.v("FWW-MainActivity", "-----------");
+        Log.v("FWW-WishlistAdapter", "Wishlist Items Count: " + items.size());
+        Log.v("FWW-WishlistAdapter", "-----------");
 
         int index = items.indexOf(item);
 
@@ -154,7 +154,7 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
     //NOTE(Jeremy): Saves a _WishlistItem_ to the application preferences
     void saveWishlistItems(SharedPreferences preferences)
     {
-        Log.v("FWW-MainActivity", "Removing Wishlist Item...");
+        Log.v("FWW-WishlistAdapter", "Saving Wishlist Items...");
 
         for (int i = 0; i < items.size(); i++)
         {
@@ -165,8 +165,8 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
 
         editor.putInt("wishlistitem-count", items.size());
 
-        Log.v("FWW-MainActivity", "Wishlist Items Count: " + items.size());
-        Log.v("FWW-MainActivity", "-----------");
+        Log.v("FWW-WishlistAdapter", "Wishlist Items Count: " + items.size());
+        Log.v("FWW-WishlistAdapter", "-----------");
 
         editor.remove("wishlistitem-" + items.size() + "-name")
                 .remove("wishlistitem-" + items.size() + "-nameoverride")
@@ -180,13 +180,10 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
                 .remove("wishlistitem-" + items.size() + "-gpslatitude")
                 .remove("wishlistitem-" + items.size() + "-gpslongitude");
 
-        Log.v("FWW-MainActivity", "Item Removed!");
-        Log.v("FWW-MainActivity", "-----------");
-
         editor.commit();
     }
 
-    public boolean itemAlreadyScanned(WishlistItem item)
+    boolean itemAlreadyScanned(WishlistItem item)
     {
         boolean itemInItems = false;
         for (WishlistItem wI : items)
@@ -214,7 +211,7 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
         return position;
     }
 
-    public int add(WishlistItem item)
+    int add(WishlistItem item)
     {
         return add(item, items.size());
     }
@@ -223,8 +220,6 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
     {
         items.remove(index);
         notifyItemRemoved(index);
-
-        saveWishlistItems(preferences);
     }
 
     void remove(WishlistItem item)
@@ -314,8 +309,8 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
                 }
                 else
                 {
-                    MainActivity.mainActivity.itemEditing = item;
-                    MainActivity.mainActivity.showEditScreen();
+                    mainActivity.itemEditing = item;
+                    mainActivity.showEditScreen();
                 }
             }
         });
