@@ -25,17 +25,19 @@ import java.util.LinkedList;
 
 class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
 {
+    static WishlistAdapter wishlistAdapter;
     private MainActivity mainActivity;
 
     private SharedPreferences preferences;
     private LinkedList<WishlistItem> items;
     private int itemLayout;
 
-    private boolean isSelecting;
+    private static boolean isSelecting;
     private LinkedList<WishlistItem> itemsSelected;
 
     WishlistAdapter(MainActivity mainActivity, SharedPreferences preferences, int itemLayout)
     {
+        wishlistAdapter = this;
         this.mainActivity = mainActivity;
         this.items = new LinkedList<>();
         this.itemLayout = itemLayout;
@@ -236,39 +238,39 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
     @Override
     public void onBindViewHolder(ViewHolder holder, int position)
     {
-        WishlistItem item = items.get(position);
+        holder.item = items.get(position);
 
-        if (item.nameOverride != null && !item.nameOverride.isEmpty())
-            holder.name.setText(item.nameOverride);
+        if (holder.item.nameOverride != null && !holder.item.nameOverride.isEmpty())
+            holder.name.setText(holder.item.nameOverride);
         else
-            holder.name.setText(item.name);
+            holder.name.setText(holder.item.name);
 
-        holder.quantity.setText(String.valueOf(item.quantity) + " / " + String.valueOf(item.quantityDesired));
+        holder.quantity.setText(String.valueOf(holder.item.quantity) + " / " + String.valueOf(holder.item.quantityDesired));
 
-        if (item.imageUrlOverride != null)
+        if (holder.item.imageUrlOverride != null)
         {
             holder.image.setImageBitmap(null);
             Picasso.with(holder.image.getContext())
                     .cancelRequest(holder.image);
             Picasso.with(holder.image.getContext())
-                    .load(item.imageUrlOverride)
+                    .load(holder.item.imageUrlOverride)
                     .fit()
                     .centerInside()
                     .into(holder.image);
         }
-        else if (item.imageUrl != null && !item.imageUrl.isEmpty())
+        else if (holder.item.imageUrl != null && !holder.item.imageUrl.isEmpty())
         {
             holder.image.setImageBitmap(null);
             Picasso.with(holder.image.getContext())
                     .cancelRequest(holder.image);
             Picasso.with(holder.image.getContext())
-                    .load(item.imageUrl)
+                    .load(holder.item.imageUrl)
                     .fit()
                     .centerInside()
                     .into(holder.image);
         }
 
-        if (item.quantity == item.quantityDesired)
+        if (holder.item.quantity == holder.item.quantityDesired)
         {
             int filterColor = Color.parseColor("#22FF22");
             holder.itemView.getBackground().setColorFilter(filterColor, PorterDuff.Mode.SRC_ATOP);
@@ -278,7 +280,7 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
             holder.itemView.getBackground().clearColorFilter();
         }
 
-        holder.itemView.setTag(item.barcode);
+        holder.itemView.setTag(holder.item.barcode);
     }
 
     @Override
@@ -286,39 +288,14 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
     {
         final ViewGroup viewParent = parent;
         View v = LayoutInflater.from(viewParent.getContext()).inflate(itemLayout, viewParent, false);
-        v.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                int index = viewParent.indexOfChild(v);
-                WishlistItem item = getWishlistItem(index);
 
-                if (isSelecting)
-                {
-                    if (!itemsSelected.contains(item)) {
-                        itemsSelected.add(item);
-                        int filterColor = Color.parseColor("#FF00FF");
-                        v.getBackground().setColorFilter(filterColor, PorterDuff.Mode.SRC_ATOP);
-                    }
-                    else
-                    {
-                        itemsSelected.remove(item);
-                        v.getBackground().clearColorFilter();
-                    }
-                }
-                else
-                {
-                    mainActivity.itemEditing = item;
-                    mainActivity.showEditScreen();
-                }
-            }
-        });
         return new ViewHolder(v);
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder
+    static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
+        WishlistItem item;
+
         View itemView;
         TextView name;
         TextView quantity;
@@ -332,6 +309,32 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
             this.name = (TextView) itemView.findViewById(R.id.bwi_txtName);
             this.quantity = (TextView) itemView.findViewById(R.id.bwi_txtQuantity);
             this.image = (ImageView) itemView.findViewById(R.id.bwi_imgImage);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v)
+        {
+            if (isSelecting)
+            {
+                if (!wishlistAdapter.itemsSelected.contains(item))
+                {
+                    wishlistAdapter.itemsSelected.add(item);
+                    int filterColor = Color.parseColor("#FF00FF");
+                    v.getBackground().setColorFilter(filterColor, PorterDuff.Mode.SRC_ATOP);
+                }
+                else
+                {
+                    wishlistAdapter.itemsSelected.remove(item);
+                    v.getBackground().clearColorFilter();
+                }
+            }
+            else
+            {
+                wishlistAdapter.mainActivity.itemEditing = item;
+                wishlistAdapter.mainActivity.showEditScreen();
+            }
         }
     }
 }
