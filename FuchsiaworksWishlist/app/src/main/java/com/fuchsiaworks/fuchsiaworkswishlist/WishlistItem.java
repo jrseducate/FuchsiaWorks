@@ -64,14 +64,29 @@ class WishlistItem
         this.gpsLongitude = 0;
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
+    interface WebpageLookup{ boolean execute(WishlistItem item); }
+    private WebpageLookup webpageLookups[] = {
+            new WebpageLookup() {
+                @Override
+                public boolean execute(WishlistItem item)
+                {
+                    return item.getWebpage_BarcodeLookup();
+                }},
+            new WebpageLookup() {
+                @Override
+                public boolean execute(WishlistItem item)
+                {
+                    return item.getWebpage_UpcItemDb();
+                }},
+    };
+
     void getWebpageIfNeeded()
     {
         WishlistItem item = this;
 
-        if (item.hasWebpageAttributes());
-        else if (item.getWebpage_BarcodeLookup());
-        else if (item.getWebpage_UpcItemDb());
+        if (!item.hasWebpageAttributes())
+            for (WebpageLookup wl : webpageLookups)
+                if (wl.execute(item)) break;
     }
 
     private boolean getWebpage_BarcodeLookup()

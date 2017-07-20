@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,15 +24,15 @@ import com.squareup.picasso.Picasso;
 import java.util.Locale;
 
 /**
- * Created by fuchs on 7/15/2017.
+ * The edit activity is used to alter the
+ * item editing, and actively saves changed
+ * made using the wishlist adapter
  */
 
 public class EditActivity extends AppCompatActivity
 {
 
     static WishlistItem itemEditing;
-    static SharedPreferences sharedPreferences;
-    static WishlistAdapter wishlistAdapter;
 
     private int PICK_IMAGE_REQUEST = 1;
 
@@ -44,7 +43,7 @@ public class EditActivity extends AppCompatActivity
 
     static void saveItemEditing()
     {
-        wishlistAdapter.saveWishlistItem(sharedPreferences, itemEditing);
+        WishlistAdapter.wishlistAdapter.saveWishlistItem(WishlistAdapter.wishlistAdapter.preferences, itemEditing);
     }
 
     @Override
@@ -52,7 +51,7 @@ public class EditActivity extends AppCompatActivity
     {
         super.onStop();
 
-        wishlistAdapter.notifyDataSetChanged();
+        WishlistAdapter.wishlistAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -280,6 +279,23 @@ public class EditActivity extends AppCompatActivity
             public void onClick(View v)
             {
                 //TODO(Jeremy): Add ability to choose landmark from google maps
+                Location location = PermissionHandler.handler.getLastBestLocation(editActivity);
+
+                if (location != null)
+                {
+                    itemEditing.gpsLatitude = location.getLatitude();
+                    itemEditing.gpsLongitude = location.getLongitude();
+
+                    Toast toastError = Toast.makeText(getApplicationContext(), "Gps now set to: " + itemEditing.gpsLatitude + ", " + itemEditing.gpsLongitude, Toast.LENGTH_SHORT);
+                    toastError.show();
+                }
+                else
+                {
+                    PermissionHandler.handler.getPermissionForLocation(editActivity);
+                }
+
+                itemEditing.gpsSet = true;
+                saveItemEditing();
             }
         });
 
@@ -295,6 +311,9 @@ public class EditActivity extends AppCompatActivity
                 {
                     itemEditing.gpsLatitude = location.getLatitude();
                     itemEditing.gpsLongitude = location.getLongitude();
+
+                    Toast toastError = Toast.makeText(getApplicationContext(), "Gps now set to: " + itemEditing.gpsLatitude + ", " + itemEditing.gpsLongitude, Toast.LENGTH_SHORT);
+                    toastError.show();
                 }
                 else
                 {
@@ -303,9 +322,6 @@ public class EditActivity extends AppCompatActivity
 
                 itemEditing.gpsSet = true;
                 saveItemEditing();
-
-                Toast toastError = Toast.makeText(getApplicationContext(), "Gps now set to: " + itemEditing.gpsLatitude + ", " + itemEditing.gpsLongitude, Toast.LENGTH_SHORT);
-                toastError.show();
             }
         });
 

@@ -28,7 +28,7 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
     static WishlistAdapter wishlistAdapter;
     private MainActivity mainActivity;
 
-    private SharedPreferences preferences;
+    SharedPreferences preferences;
     private LinkedList<WishlistItem> items;
     private int itemLayout;
 
@@ -42,7 +42,7 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
         this.items = new LinkedList<>();
         this.itemLayout = itemLayout;
         this.preferences = preferences;
-        this.isSelecting = false;
+        isSelecting = false;
     }
 
     void beginItemSelection()
@@ -60,11 +60,6 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
         itemsSelected = null;
 
         return itemsSelectedPtr;
-    }
-
-    private WishlistItem getWishlistItem(int index)
-    {
-        return items.get(index);
     }
 
     //NOTE(Jeremy): Loads all _WishlistItem_ from application preferences
@@ -154,6 +149,7 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
     }
 
     //NOTE(Jeremy): Saves a _WishlistItem_ to the application preferences
+    @SuppressLint("ApplySharedPref")
     void saveWishlistItems(SharedPreferences preferences)
     {
         Log.v("FWW-WishlistAdapter", "Saving Wishlist Items...");
@@ -198,7 +194,7 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
             return itemInItems;
     }
 
-    public int add(WishlistItem item, int position)
+    int add(WishlistItem item, int position)
     {
         if (!itemAlreadyScanned(item))
         {
@@ -286,8 +282,7 @@ class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder>
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
-        final ViewGroup viewParent = parent;
-        View v = LayoutInflater.from(viewParent.getContext()).inflate(itemLayout, viewParent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(itemLayout, parent, false);
 
         return new ViewHolder(v);
     }

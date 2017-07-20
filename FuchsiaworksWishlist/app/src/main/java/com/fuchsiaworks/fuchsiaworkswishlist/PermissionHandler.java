@@ -10,7 +10,8 @@ import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
 
 /**
- * Created by fuchs on 7/17/2017.
+ * The permission handler used to resolve
+ * any required permissions
  */
 
 class PermissionHandler
@@ -22,7 +23,8 @@ class PermissionHandler
 
     Location getLastBestLocation(Activity activity)
     {
-        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
             return null;
         }
@@ -59,8 +61,10 @@ class PermissionHandler
 
     void getPermissionForLocation(Activity activity)
     {
-        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        if (ActivityCompat.checkSelfPermission(activity,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(activity,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
                     Manifest.permission.ACCESS_FINE_LOCATION) &&
@@ -73,12 +77,14 @@ class PermissionHandler
             else
             {
                 ActivityCompat.requestPermissions(activity,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                        PERMISSION_ACCESS_LOCATION);
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                                     Manifest.permission.ACCESS_COARSE_LOCATION},
+                                     PERMISSION_ACCESS_LOCATION);
             }
         }
     }
 
+    @SuppressWarnings("UnusedParameters")
     void onRequestPermissionsResult(Activity activity, int requestCode, String permissions[], int[] grantResults)
     {
         switch(requestCode)

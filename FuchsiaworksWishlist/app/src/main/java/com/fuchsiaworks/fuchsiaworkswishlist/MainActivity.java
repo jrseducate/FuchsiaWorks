@@ -8,6 +8,7 @@ import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,10 +25,15 @@ import com.google.zxing.integration.android.IntentResult;
 
 import java.util.LinkedList;
 
+/**
+ * Author: Jeremy
+ * Note: The main activity is the activity shown on starting
+ * the application
+ */
+
 @SuppressWarnings("FieldCanBeLocal")
 public class MainActivity extends AppCompatActivity
 {
-    private static final String TAG = "BarcodeMain";
     private static final int GOOGLE_BARCODE_CAPTURE = 9001;
     private static final int ZXING_BARCODE_CAPTURE = 49374;
 
@@ -124,7 +130,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        //NOTE(Jeremy): The _FloatingActionButton_ used to remove all items
+        //NOTE(Jeremy): The _FloatingActionButton_ used to remove _WishlistItem_s
         btnClearItems = (FloatingActionButton) findViewById(R.id.ma_fabClearItems);
         btnClearItems.setOnClickListener(new View.OnClickListener()
         {
@@ -331,7 +337,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults)
     {
         PermissionHandler.handler.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
     }
@@ -340,8 +346,6 @@ public class MainActivity extends AppCompatActivity
     {
         Intent editItemIntent = new Intent(this, EditActivity.class);
         EditActivity.itemEditing = itemEditing;
-        EditActivity.sharedPreferences = sharedPreferences;
-        EditActivity.wishlistAdapter = wishlistAdapter;
 
         startActivity(editItemIntent);
     }
